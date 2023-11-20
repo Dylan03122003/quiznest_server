@@ -2,6 +2,7 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import { config } from 'dotenv'
 import express from 'express'
+import { protect } from './controllers/auth_controllers/protect.js'
 import { globalErrorHandler } from './controllers/error_controllers/index.js'
 import userRoutes from './routes/userRoutes.js'
 
@@ -27,7 +28,7 @@ app.use(cookieParser())
 
 app.use('/api/users', userRoutes)
 
-app.get('/api/test', (req, res) => {
+app.get('/api/test', protect, (req, res) => {
   res.status(200).json({ message: 'OK' })
 })
 
@@ -42,16 +43,8 @@ app.all('*', function (req, res) {
 
 app.use(globalErrorHandler)
 
-// Database connection and listening to incoming requests --------------------------------
-// const database = process.env.MONGO_URL
-
 const PORT = process.env.PORT || 3000
-// mongoose.connect(database).then(() => {
-//   console.log('Successfully connected to database')
-//   app.listen(PORT, () => {
-//     console.log(`Listening on port ${PORT}`)
-//   })
-// })
+
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`)
 })
