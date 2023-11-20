@@ -27,6 +27,10 @@ app.use(cookieParser())
 
 app.use('/api/users', userRoutes)
 
+app.get('/api/test', (req, res) => {
+  res.status(200).json({ message: 'OK' })
+})
+
 app.all('*', function (req, res) {
   res.status(401).json({
     status: 'fail',
