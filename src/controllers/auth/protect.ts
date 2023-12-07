@@ -1,11 +1,8 @@
 import { NextFunction, Request, Response } from 'express'
 import jwt, { JwtPayload } from 'jsonwebtoken'
+import { CustomRequest } from '../../types.js'
 import AppError from '../../util/AppError.js'
 import { prisma } from '../../util/prisma_client.js'
-
-interface CustomRequest extends Request {
-  user?: any
-}
 
 export const protect = async (
   req: CustomRequest,
@@ -26,7 +23,7 @@ export const protect = async (
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload
     const user = await prisma.user.findFirst({
-      where: { user_id: decoded._id },
+      where: { userID: decoded._id },
     })
 
     if (!user) {

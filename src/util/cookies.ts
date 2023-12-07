@@ -8,3 +8,5 @@ export const getMaxAge = () => {
     return 14 * 24 * 60 * 60 * 1000
   }
 }
+
+export const ONE_DAY_AGE = 60 * 24 * 60 * 100

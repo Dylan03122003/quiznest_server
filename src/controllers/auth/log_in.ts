@@ -40,7 +40,7 @@ export const login = async (
   next: NextFunction,
 ) => {
   try {
-    const token = createToken(req.user.user_id)
+    const token = createToken(req.user.userID)
     req.user.password = undefined
     res.cookie('access_token', token, {
       httpOnly: true,

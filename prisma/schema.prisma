@@ -7,14 +7,83 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL_DEV")
 }
 
 model User {
-  user_id  Int    @id @default(autoincrement())
-  name     String
-  email    String
-  password String
-  photo    String @default("")
-  role     String @default("user")
+  userID     String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  password   String
+  photo      String?
+  role       Role     @default(USER)
+  createdAt  DateTime @default(now())
+  builtDecks Deck[]
+
+  @@index([email])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Deck {
+  deckID       String     @id @default(uuid())
+  parentDeckID String?
+  title        String
+  userID       String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  author       User       @relation(fields: [userID], references: [userID], onDelete: Cascade)
+  parentDeck   Deck?      @relation("ChildDecks", fields: [parentDeckID], references: [deckID])
+  childDecks   Deck[]     @relation("ChildDecks")
+  questions    Question[]
+
+  @@index([deckID, parentDeckID])
+}
+
+model Question {
+  questionID      String          @id @default(uuid())
+  deckID          String
+  type            QuestionType
+  clozeCard       ClozeCard?
+  flashCard       Flashcard?
+  multipleChoices MultipleChoice?
+  explanation     String?
+  revisedAt       DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  deck            Deck            @relation(fields: [deckID], references: [deckID], onDelete: Cascade)
+}
+
+enum QuestionType {
+  CLOZE_CARD
+  FLASHCARD
+  MULTIPLE_CHOICE
+}
+
+model ClozeCard {
+  clozeCardID String   @id @default(uuid())
+  questionID  String   @unique
+  content     String
+  answers     String[]
+  question    Question @relation(fields: [questionID], references: [questionID], onDelete: Cascade)
+}
+
+model Flashcard {
+  flashcardID String   @id @default(uuid())
+  questionID  String   @unique
+  content     String
+  back        String
+  question    Question @relation(fields: [questionID], references: [questionID], onDelete: Cascade)
+}
+
+model MultipleChoice {
+  multipleChoiceID String   @id @default(uuid())
+  questionID       String   @unique
+  content          String
+  choices          String[]
+  answers          String[]
+  question         Question @relation(fields: [questionID], references: [questionID], onDelete: Cascade)
 }

@@ -37,13 +37,13 @@ export const signup = async (
         name: req.body.name,
         email: req.body.email,
         password: req.body.password,
-        role: 'user',
+        role: 'USER',
       },
     })
 
     newUser = excludeFields(newUser, ['password'])
 
-    const token = createToken(newUser.user_id)
+    const token = createToken(newUser.userID)
 
     res.cookie('access_token', token, {
       httpOnly: true,
