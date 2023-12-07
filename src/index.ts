@@ -20,7 +20,7 @@ const app = express()
 // SET UP MIDDLEWARES  ----------------------------------------------------------------
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: process.env.CLIENT_URL_PRO,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, // Allow credentials (cookies)
   }),
