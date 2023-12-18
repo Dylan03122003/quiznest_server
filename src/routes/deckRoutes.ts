@@ -7,7 +7,8 @@ import {
 } from '../controllers/deck/create_deck.js'
 import { deleteDeck } from '../controllers/deck/delete_deck.js'
 import { getChildrenDecks } from '../controllers/deck/get_children_decks.js'
-import { getDecks } from '../controllers/deck/get_decks.js'
+import { getDeckDetail } from '../controllers/deck/get_deck_detail.js'
+import { getAllDecks } from '../controllers/deck/get_decks.js'
 import { updateDeckTitle } from '../controllers/deck/update_deck_title.js'
 import { createAQuestion } from '../controllers/question/create_a_question.js'
 import { createQuestions } from '../controllers/question/create_questions.js'
@@ -16,7 +17,7 @@ const router = express.Router()
 router
   .route('/')
   .post(protect, validateCreateDeckData, createDeck, createQuestions)
-  .get(protect, getDecks)
+  .get(protect, getAllDecks)
 
 router.post('/change-parent', protect, changeParent)
 
@@ -25,7 +26,8 @@ router
   .post(protect, createAQuestion)
   .delete(protect, deleteDeck)
   .patch(protect, updateDeckTitle)
+  .get(protect, getDeckDetail)
 
-router.get('/:parentDeckID', protect, getChildrenDecks)
+router.get('/children-decks/:parentDeckID', protect, getChildrenDecks)
 
 export default router

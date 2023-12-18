@@ -50,7 +50,6 @@ model Question {
   clozeCard       ClozeCard?
   flashCard       Flashcard?
   multipleChoices MultipleChoice?
-  explanation     String?
   revisedAt       DateTime?
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
@@ -76,6 +75,7 @@ model Flashcard {
   questionID  String   @unique
   content     String
   back        String
+  explanation String?
   question    Question @relation(fields: [questionID], references: [questionID], onDelete: Cascade)
 }
 
@@ -85,5 +85,6 @@ model MultipleChoice {
   content          String
   choices          String[]
   answers          String[]
+  explanation      String?
   question         Question @relation(fields: [questionID], references: [questionID], onDelete: Cascade)
 }

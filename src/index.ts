@@ -9,6 +9,7 @@ import './passport.js'
 import authRoutes from './routes/authRoutes.js'
 import deckRoutes from './routes/deckRoutes.js'
 import googleRoutes from './routes/googleRoute.js'
+import questionRoutes from './routes/questionRoutes.js'
 import requestRoutes from './routes/requestRoutes.js'
 import userRoutes from './routes/userRoutes.js'
 import { ONE_DAY_AGE } from './util/cookies.js'
@@ -41,6 +42,7 @@ app.use(passport.session())
 
 app.use('/api/users', userRoutes)
 app.use('/api/decks', deckRoutes)
+app.use('/api/questions', questionRoutes)
 app.use('/request', requestRoutes)
 app.use('/oauth', authRoutes)
 app.use('/auth', googleRoutes)

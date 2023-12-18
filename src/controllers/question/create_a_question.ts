@@ -40,6 +40,7 @@ export const createAQuestion = async (
             create: {
               content: question.content,
               back: question.back,
+              explanation: question.explanation,
             },
           },
         },

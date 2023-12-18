@@ -10,15 +10,23 @@ export const getChildrenDecks = async (
 ) => {
   try {
     const currentUser = req.user
-    const { parentDeckID } = req.params
+    let { parentDeckID } = req.params
+
+    if (!parentDeckID || parentDeckID === 'null') parentDeckID = null
 
     const decks = await prisma.deck.findMany({
       where: {
-        parentDeckID,
+        parentDeckID: parentDeckID,
         userID: currentUser.userID,
       },
     })
-    sendResponse(res, 200, 'success', 'Getting decks successfully!', decks)
+    sendResponse(
+      res,
+      200,
+      'success',
+      'Getting child decks successfully!',
+      decks,
+    )
   } catch (error) {
     return next(error)
   }
