@@ -62,7 +62,6 @@ router.post(
 
     console.log(`Webhook with an ID of ${id} and type of ${eventType}`)
     // Console log the full payload to view
-    console.log('Webhook body:', evt.data)
 
     if (eventType === 'user.created') {
       const {
