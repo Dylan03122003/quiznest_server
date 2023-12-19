@@ -10,7 +10,7 @@ const router = express.Router()
 router.post(
   '/webhook',
   bodyParser.raw({ type: 'application/json' }),
-  async function (req, res) {
+  async function (req, res, next) {
     // Check if the 'Signing Secret' from the Clerk Dashboard was correctly provided
     const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET
     if (!WEBHOOK_SECRET) {
@@ -62,86 +62,99 @@ router.post(
 
     console.log(`Webhook with an ID of ${id} and type of ${eventType}`)
     // Console log the full payload to view
+    try {
+      if (eventType === 'user.created') {
+        const {
+          id,
+          email_addresses,
+          image_url,
+          first_name,
+          last_name,
+          username,
+        } = evt.data
 
-    if (eventType === 'user.created') {
-      const {
-        id,
-        email_addresses,
-        image_url,
-        first_name,
-        last_name,
-        username,
-      } = evt.data
+        const user: InputUser = {
+          clerkID: id,
+          email: email_addresses[0].email_address,
+          name: username,
+          photo: image_url,
+          password: 'NO PASSWORD',
+        }
 
-      const user: InputUser = {
-        clerkID: id,
-        email: email_addresses[0].email_address,
-        name: username,
-        photo: image_url,
-        password: 'NO PASSWORD',
-      }
-
-      console.log('input user: ', user)
-
-      const newUser = await prisma.user.create({
-        data: {
-          ...user,
-        },
-      })
-
-      if (newUser) {
-        console.log('new user is created successfully')
-        await clerkClient.users.updateUserMetadata(id, {
-          publicMetadata: {
-            userId: newUser.userID,
+        const existingUser = await prisma.user.findUnique({
+          where: {
+            email: user.email,
           },
+        })
+
+        if (existingUser) {
+          return res.status(200).json({
+            message: 'Signed in successfully',
+          })
+        }
+
+        const newUser = await prisma.user.create({
+          data: {
+            ...user,
+          },
+        })
+
+        if (newUser) {
+          console.log('new user is created successfully')
+          await clerkClient.users.updateUserMetadata(id, {
+            publicMetadata: {
+              userId: newUser.userID,
+            },
+          })
+        }
+
+        return res.status(201).json({
+          message: 'Created successfully',
+          user: newUser,
         })
       }
 
-      return res.status(201).json({
-        message: 'Created successfully',
-        user: newUser,
-      })
-    }
+      if (eventType === 'user.updated') {
+        const { id, image_url, first_name, last_name, username } = evt.data
 
-    if (eventType === 'user.updated') {
-      const { id, image_url, first_name, last_name, username } = evt.data
+        const user = {
+          name: username,
+          photo: image_url,
+        }
 
-      const user = {
-        name: username,
-        photo: image_url,
+        await prisma.user.update({
+          data: user,
+          where: {
+            clerkID: id,
+          },
+        })
+
+        return res.status(200).json({
+          message: 'Updated successfully',
+        })
       }
 
-      await prisma.user.update({
-        data: user,
-        where: {
-          clerkID: id,
-        },
-      })
+      if (eventType === 'user.deleted') {
+        const { id } = evt.data
+
+        await prisma.user.delete({
+          where: {
+            clerkID: id,
+          },
+        })
+
+        return res.status(200).json({
+          message: 'Deleted successfully',
+        })
+      }
 
       return res.status(200).json({
-        message: 'Updated successfully',
+        success: true,
+        message: 'Webhook received',
       })
+    } catch (error) {
+      return next(error)
     }
-
-    if (eventType === 'user.deleted') {
-      const { id } = evt.data
-
-      await prisma.user.delete({
-        where: {
-          clerkID: id,
-        },
-      })
-
-      return res.status(200).json({
-        message: 'Deleted successfully',
-      })
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: 'Webhook received',
-    })
   },
 )
 
