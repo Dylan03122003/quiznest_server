@@ -3,7 +3,6 @@ import cookieSession from 'cookie-session'
 import cors from 'cors'
 import { config } from 'dotenv'
 import express from 'express'
-import passport from 'passport'
 import { globalErrorHandler } from './controllers/error/index.js'
 import authRoutes from './routes/authRoutes.js'
 import deckRoutes from './routes/deckRoutes.js'
@@ -32,15 +31,14 @@ app.use(
     credentials: true, // Allow credentials (cookies)
   }),
 )
+app.use('/api', webhookRoutes)
+
 app.use(express.json())
 app.use(cookieParser())
 
 app.use(
   cookieSession({ name: 'session', keys: ['quocduong'], maxAge: ONE_DAY_AGE }),
 )
-
-app.use(passport.initialize())
-app.use(passport.session())
 
 // app.use(express.static("public"));
 
@@ -49,7 +47,6 @@ app.use(passport.session())
 app.use('/api/users', userRoutes)
 app.use('/api/decks', deckRoutes)
 app.use('/api/questions', questionRoutes)
-app.use('/api', webhookRoutes)
 app.use('/request', requestRoutes)
 app.use('/oauth', authRoutes)
 app.use('/auth', googleRoutes)
