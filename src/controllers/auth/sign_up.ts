@@ -34,6 +34,7 @@ export const signup = async (
 
     let newUser = await prisma.user.create({
       data: {
+        clerkID: Date.now() + '',
         name: req.body.name,
         email: req.body.email,
         password: req.body.password,

@@ -49,6 +49,7 @@ router.get('/', async (req: Request, res: Response) => {
     if (!existingUser) {
       responsedUser = await prisma.user.create({
         data: {
+          clerkID: Date.now() + '',
           email: userInfo.email,
           name: userInfo.name,
           photo: userInfo.picture,

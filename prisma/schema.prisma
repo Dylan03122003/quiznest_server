@@ -11,6 +11,7 @@ datasource db {
 }
 
 model User {
+  clerkID    String   @unique // I added this column 
   userID     String   @id @default(uuid())
   name       String
   email      String   @unique

@@ -5,12 +5,13 @@ import { config } from 'dotenv'
 import express from 'express'
 import passport from 'passport'
 import { globalErrorHandler } from './controllers/error/index.js'
-import './passport.js'
 import authRoutes from './routes/authRoutes.js'
 import deckRoutes from './routes/deckRoutes.js'
 import googleRoutes from './routes/googleRoute.js'
 import questionRoutes from './routes/questionRoutes.js'
 import requestRoutes from './routes/requestRoutes.js'
+import webhookRoutes from './routes/webhookRoutes.js'
+
 import userRoutes from './routes/userRoutes.js'
 import { ONE_DAY_AGE } from './util/cookies.js'
 import { prisma } from './util/prisma_client.js'
@@ -19,9 +20,14 @@ config()
 const app = express()
 
 // SET UP MIDDLEWARES  ----------------------------------------------------------------
+const clientURL =
+  process.env.NODE_ENV === 'development'
+    ? process.env.CLIENT_URL_DEV
+    : process.env.CLIENT_URL_PRO
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL_PRO,
+    origin: clientURL,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, // Allow credentials (cookies)
   }),
@@ -43,6 +49,7 @@ app.use(passport.session())
 app.use('/api/users', userRoutes)
 app.use('/api/decks', deckRoutes)
 app.use('/api/questions', questionRoutes)
+app.use('/api', webhookRoutes)
 app.use('/request', requestRoutes)
 app.use('/oauth', authRoutes)
 app.use('/auth', googleRoutes)
