@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express'
+import { NextFunction, Response } from 'express'
 import { CustomRequest } from '../../types.js'
 import { prisma } from '../../util/prisma_client.js'
 import { sendResponse } from '../../util/sendResponse.js'
@@ -18,14 +18,18 @@ export const createDeck = async (
   next: NextFunction,
 ) => {
   try {
-    const currentUser = req.user
+    const userID = req.user.userID
+
+    if (!userID) {
+      return sendResponse(res, 400, 'fail', 'Please login to get access!')
+    }
     const { parentDeckID, title, questions } = req.body
 
     const newDeck = await prisma.deck.create({
       data: {
         title,
-        parentDeckID: parentDeckID ? parentDeckID : null,
-        userID: currentUser.userID,
+        parentDeckID: parentDeckID || null,
+        userID: userID,
       },
     })
 

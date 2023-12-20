@@ -100,7 +100,7 @@ router.post(
         })
 
         if (newUser) {
-          console.log('new user is created successfully')
+          console.log(`NEW USER: ${newUser.email} is created successfully`)
           await clerkClient.users.updateUserMetadata(id, {
             publicMetadata: {
               userId: newUser.userID,
@@ -122,12 +122,17 @@ router.post(
           photo: image_url,
         }
 
-        await prisma.user.update({
+        const updatedUser = await prisma.user.update({
           data: user,
           where: {
             clerkID: id,
           },
         })
+
+        if (updatedUser)
+          console.log(
+            `UPDATED USER: ${updatedUser.name} is updated successfully`,
+          )
 
         return res.status(200).json({
           message: 'Updated successfully',
@@ -137,11 +142,16 @@ router.post(
       if (eventType === 'user.deleted') {
         const { id } = evt.data
 
-        await prisma.user.delete({
+        const deletedUser = await prisma.user.delete({
           where: {
             clerkID: id,
           },
         })
+
+        if (deletedUser)
+          console.log(
+            `DELETED USER: ${deletedUser.name} is deleted successfully`,
+          )
 
         return res.status(200).json({
           message: 'Deleted successfully',

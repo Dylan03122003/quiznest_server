@@ -9,7 +9,8 @@ export const getChildrenDecks = async (
   next: NextFunction,
 ) => {
   try {
-    const currentUser = req.user
+    const userId = req.user.userID
+
     let { parentDeckID } = req.params
 
     if (!parentDeckID || parentDeckID === 'null') parentDeckID = null
@@ -17,7 +18,7 @@ export const getChildrenDecks = async (
     const decks = await prisma.deck.findMany({
       where: {
         parentDeckID: parentDeckID,
-        userID: currentUser.userID,
+        userID: userId,
       },
     })
     sendResponse(

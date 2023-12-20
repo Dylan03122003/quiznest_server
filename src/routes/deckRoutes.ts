@@ -1,5 +1,6 @@
+import { ClerkExpressWithAuth } from '@clerk/clerk-sdk-node'
 import express from 'express'
-import { protect } from '../controllers/auth/protect.js'
+import { protectViaClerk } from '../controllers/auth/protect_via_clerk.js'
 import { changeParent } from '../controllers/deck/change_parent.js'
 import {
   createDeck,
@@ -12,22 +13,39 @@ import { getAllDecks } from '../controllers/deck/get_decks.js'
 import { updateDeckTitle } from '../controllers/deck/update_deck_title.js'
 import { createAQuestion } from '../controllers/question/create_a_question.js'
 import { createQuestions } from '../controllers/question/create_questions.js'
+
 const router = express.Router()
 
 router
   .route('/')
-  .post(protect, validateCreateDeckData, createDeck, createQuestions)
-  .get(protect, getAllDecks)
+  .post(
+    ClerkExpressWithAuth(),
+    protectViaClerk,
+    validateCreateDeckData,
+    createDeck,
+    createQuestions,
+  )
+  .get(ClerkExpressWithAuth(), protectViaClerk, getAllDecks)
 
-router.post('/change-parent', protect, changeParent)
+router.post(
+  '/change-parent',
+  ClerkExpressWithAuth(),
+  protectViaClerk,
+  changeParent,
+)
 
 router
   .route('/:deckID')
-  .post(protect, createAQuestion)
-  .delete(protect, deleteDeck)
-  .patch(protect, updateDeckTitle)
-  .get(protect, getDeckDetail)
+  .post(ClerkExpressWithAuth(), protectViaClerk, createAQuestion)
+  .delete(ClerkExpressWithAuth(), protectViaClerk, deleteDeck)
+  .patch(ClerkExpressWithAuth(), protectViaClerk, updateDeckTitle)
+  .get(ClerkExpressWithAuth(), protectViaClerk, getDeckDetail)
 
-router.get('/children-decks/:parentDeckID', protect, getChildrenDecks)
+router.get(
+  '/children-decks/:parentDeckID',
+  ClerkExpressWithAuth(),
+  protectViaClerk,
+  getChildrenDecks,
+)
 
 export default router
