@@ -14,7 +14,6 @@ export const deleteQuestion = async (
     await prisma.question.delete({
       where: { questionID },
     })
-
     sendResponse(res, 200, 'success', 'Deleted question successfully')
   } catch (error) {
     return next(error)

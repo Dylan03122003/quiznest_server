@@ -51,6 +51,9 @@ async function getQuestionsRecursive(deckID: string): Promise<Question[]> {
           clozeCard: true,
           multipleChoices: true,
         },
+        orderBy: {
+          createdAt: 'asc',
+        },
       },
       childDecks: { include: { questions: true } },
     },

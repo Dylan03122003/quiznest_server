@@ -47,6 +47,7 @@ model Deck {
 model Question {
   questionID      String          @id @default(uuid())
   deckID          String
+  isBookmarked    Boolean         @default(false)
   type            QuestionType
   clozeCard       ClozeCard?
   flashCard       Flashcard?
